@@ -17,6 +17,13 @@ def add_order(food_item):
     else:
         return jsonify({"status": "invalid food item", "current_orders": orders})
 
+@app.route('/reset_order', methods=['POST'])
+def reset_order():
+    for key in orders:
+        orders[key] = 0
+    return jsonify({"status": "orders reset", "current_orders": orders})
+
+
 @app.route('/get_orders', methods=['GET'])
 def get_orders():
     return jsonify(orders)

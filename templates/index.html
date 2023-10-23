@@ -32,6 +32,7 @@
     <button id="noodlesBtn">Order Noodles</button>
     <button id="saladBtn">Order Salad</button>
     <button id="riceBtn">Order Rice</button>
+    <button id="resetBtn">Reset Orders</button>
     <label>Number of Servers: </label><input type="number" id="servers" min="1" value="1"><br><br>
 
     <canvas id="ordersChart"></canvas>
@@ -81,7 +82,7 @@
             let lambda = totalCount / 60;
             let rho = lambda / mu;
 
-            let L, W, Wq;
+            let L = 0, W = 0, Wq = 0;
 
             if (lambda < mu) {
                 L = rho / (1 - rho);
@@ -110,6 +111,11 @@
             updateMetrics(totalCount, servers);
         }
 
+	function resetValues() {
+    	    ordersChart.data.datasets[0].data = [0, 0, 0]; // Resetting all values to zero
+            ordersChart.update();
+	}
+
         ["noodles", "salad", "rice"].forEach(food => {
             $("#" + food + "Btn").click(function () {
                 let servers = parseInt($("#servers").val());
@@ -118,6 +124,16 @@
                 });
             });
         });
+
+	$("#resetBtn").click(function () {
+    	    let servers = parseInt($("#servers").val());
+    	    $.post("/reset_order", function (data) {
+        	resetValues(); // Calling the reset function
+        	updateMetrics(0, servers); // Update metrics with zero count after resetting
+    	    });
+	});
+
+
 
         // Get the initial order counts when the page loads
         $.get("/get_orders", function (data) {
